@@ -182,9 +182,38 @@ const fortunes = [
   "Put your phone down and live."
 ];
 
-const today = new Date().toISOString().slice(0,10).replace(/-/g,"");
-const index = parseInt(today) % fortunes.length;
-document.getElementById("fortune").innerText = fortunes[index];
+// --- utilities ---
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// --- load or initialize deck ---
+let deck = JSON.parse(localStorage.getItem("fortuneDeck"));
+let index = parseInt(localStorage.getItem("fortuneIndex"), 10);
+
+if (!deck || deck.length !== fortunes.length) {
+  deck = shuffle([...fortunes]);
+  index = 0;
+}
+
+// --- show fortune ---
+document.getElementById("fortune").innerText = deck[index];
+
+// --- advance index ---
+index++;
+
+if (index >= deck.length) {
+  deck = shuffle([...fortunes]);
+  index = 0;
+}
+
+// --- persist ---
+localStorage.setItem("fortuneDeck", JSON.stringify(deck));
+localStorage.setItem("fortuneIndex", index);
 </script>
 
 </body>
